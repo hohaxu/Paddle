@@ -21,7 +21,7 @@ paddle train \
   --trainer_count=1 \
   --show_parameter_stats_period=5000 \
   --save_dir=./output \
-  --num_passes=10000 \
+  --num_passes=2 \
   --average_test_period=10000000 \
   --init_model_path=./data \
   --load_missing_parameter_strategy=rand \

@@ -74,8 +74,8 @@ else:
 mark_dict_len = 2
 word_dim = 32
 mark_dim = 5
-hidden_dim = 512
-depth = 8
+hidden_dim = 12
+depth = 2
 
 
 
@@ -84,13 +84,13 @@ depth = 8
 
 settings(
     batch_size=150,
-    learning_method=MomentumOptimizer(momentum=0),
+    learning_method=AdaGradOptimizer(),
     learning_rate=2e-2,
     regularization=L2Regularization(8e-4),
-    is_async=False,
-    model_average=ModelAverage(average_window=0.5,
-                               max_average_window=10000),
-                               
+    # is_async=False,
+    # model_average=ModelAverage(average_window=0.5,
+                               # max_average_window=10000),
+
 )
 
 
@@ -113,11 +113,11 @@ if not is_predict:
     target = data_layer(name='target', size=label_dict_len)
 
 
-default_std=1/math.sqrt(hidden_dim)/3.0
+default_std=1/hidden_dim/3.0
 
 emb_para = ParameterAttribute(name='emb', initial_std=0., learning_rate=0.)
 std_0 = ParameterAttribute(initial_std=0.)
-std_default = ParameterAttribute(initial_std=default_std) 
+std_default = ParameterAttribute(initial_std=default_std)
 
 predicate_embedding = embedding_layer(size=word_dim, input=predicate, param_attr=ParameterAttribute(name='vemb',initial_std=default_std))
 mark_embedding = embedding_layer(name='word_ctx-in_embedding', size=mark_dim, input=mark, param_attr=std_0)
@@ -139,7 +139,7 @@ lstm_para_attr = ParameterAttribute(initial_std=0.0, learning_rate=1.0)
 hidden_para_attr = ParameterAttribute(initial_std=default_std, learning_rate=mix_hidden_lr)
 
 lstm_0 = lstmemory(name='lstm0',
-                   input=hidden_0, 
+                   input=hidden_0,
                    act=ReluActivation(),
                    gate_act=SigmoidActivation(),
                    state_act=SigmoidActivation(),
@@ -153,7 +153,7 @@ input_tmp = [hidden_0, lstm_0]
 for i in range(1, depth):
 
     mix_hidden = mixed_layer(name='hidden'+str(i),
-                             size=hidden_dim, 
+                             size=hidden_dim,
                              bias_attr=std_default,
                              input=[full_matrix_projection(input=input_tmp[0], param_attr=hidden_para_attr),
                                     full_matrix_projection(input=input_tmp[1], param_attr=lstm_para_attr)
@@ -173,7 +173,7 @@ for i in range(1, depth):
 
 feature_out = mixed_layer(name='output',
                           size=label_dict_len,
-                          bias_attr=std_default, 
+                          bias_attr=std_default,
                           input=[full_matrix_projection(input=input_tmp[0], param_attr=hidden_para_attr),
                                  full_matrix_projection(input=input_tmp[1], param_attr=lstm_para_attr)
                                 ],
@@ -184,13 +184,13 @@ feature_out = mixed_layer(name='output',
 if not is_predict:
     crf_l = crf_layer( name = 'crf',
                        size = label_dict_len,
-                       input = feature_out, 
+                       input = feature_out,
                        label = target,
                        param_attr=ParameterAttribute(name='crfw',initial_std=default_std, learning_rate=mix_hidden_lr)
 
                       )
 
-    
+
     crf_dec_l = crf_decoding_layer(name = 'crf_dec_l',
                                    size = label_dict_len,
                                    input = feature_out,
@@ -200,7 +200,7 @@ if not is_predict:
 
 
     eval = sum_evaluator(input=crf_dec_l)
-        
+
     outputs(crf_l)
 
 else:
