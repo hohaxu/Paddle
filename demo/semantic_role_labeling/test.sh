@@ -15,24 +15,9 @@
 # limitations under the License.
 set -e
 
-function get_best_pass() {
-  cat $1  | grep -Pzo 'Test .*\n.*pass-.*' | \
-  sed  -r 'N;s/Test.* cost=([0-9]+\.[0-9]+).*\n.*pass-([0-9]+)/\1 \2/g' |\
-  sort -n | head -n 1
-}
-
-log=train.log
-LOG=`get_best_pass $log`
-LOG=(${LOG})
-evaluate_pass="output/pass-${LOG[1]}"
-
-echo 'evaluating from pass '$evaluate_pass
-model_list=./model.list
-touch $model_list | echo $evaluate_pass > $model_list
-
 paddle train \
   --config=./db_lstm.py \
-  --model_list=$model_list \
+  --init_model_path="output/pass-00001" \
   --job=test \
   --use_gpu=false \
   --config_args=is_test=1 \

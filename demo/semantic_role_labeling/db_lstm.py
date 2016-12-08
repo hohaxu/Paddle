@@ -138,7 +138,7 @@ mix_hidden_lr = 1e-3
 lstm_para_attr = ParameterAttribute(initial_std=0.0, learning_rate=1.0)
 hidden_para_attr = ParameterAttribute(initial_std=default_std, learning_rate=mix_hidden_lr)
 
-lstm_0 = lstmemory(name='lstm0',
+lstm_0 = grumemory(name='lstm0',
                    input=hidden_0,
                    act=ReluActivation(),
                    gate_act=SigmoidActivation(),
@@ -160,7 +160,7 @@ for i in range(1, depth):
                                    ]
                              )
 
-    lstm = lstmemory(name='lstm'+str(i),
+    lstm = grumemory(name='lstm'+str(i),
                      input=mix_hidden,
                      act=ReluActivation(),
                      gate_act=SigmoidActivation(),
