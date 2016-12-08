@@ -15,15 +15,12 @@
 # limitations under the License.
 set -e
 paddle train \
-  --config=./db_lstm.py \
+  --config=./db_lstm1.py \
   --use_gpu=0 \
   --log_period=5000 \
   --trainer_count=1 \
   --show_parameter_stats_period=5000 \
   --save_dir=./output \
-  --num_passes=2 \
-  --average_test_period=10000000 \
-  --init_model_path=./data \
-  --load_missing_parameter_strategy=rand \
+  --num_passes=1 \
   --test_all_data_in_one_period=1 \
   2>&1 | tee 'train.log'

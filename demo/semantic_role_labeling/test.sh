@@ -16,8 +16,8 @@
 set -e
 
 paddle train \
-  --config=./db_lstm.py \
-  --init_model_path="output/pass-00001" \
+  --config=./db_lstm1.py \
+  --init_model_path="output/pass-00000" \
   --job=test \
   --use_gpu=false \
   --config_args=is_test=1 \

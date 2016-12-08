@@ -140,11 +140,11 @@ hidden_para_attr = ParameterAttribute(initial_std=default_std, learning_rate=mix
 
 lstm_0 = grumemory(name='lstm0',
                    input=hidden_0,
-                   act=ReluActivation(),
-                   gate_act=SigmoidActivation(),
-                   state_act=SigmoidActivation(),
-                   bias_attr=std_0,
-                   param_attr=lstm_para_attr)
+                   act=ReluActivation())
+                   # gate_act=SigmoidActivation(),
+                   # state_act=SigmoidActivation(),
+                   # bias_attr=std_0,
+                   # param_attr=lstm_para_attr)
 
 #stack L-LSTM and R-LSTM with direct edges
 input_tmp = [hidden_0, lstm_0]
@@ -163,11 +163,11 @@ for i in range(1, depth):
     lstm = grumemory(name='lstm'+str(i),
                      input=mix_hidden,
                      act=ReluActivation(),
-                     gate_act=SigmoidActivation(),
-                     state_act=SigmoidActivation(),
-                     reverse=((i % 2)==1),
-                     bias_attr=std_0,
-                     param_attr=lstm_para_attr)
+                     # gate_act=SigmoidActivation(),
+                     # state_act=SigmoidActivation(),
+                     reverse=((i % 2)==1))
+                     # bias_attr=std_0,
+                     # param_attr=lstm_para_attr)
 
     input_tmp = [mix_hidden, lstm]
 
